@@ -17,16 +17,16 @@ The bot uses MiniMax through the Anthropic-compatible LangChain client and `pyth
 ```text
 .
 ├── app/
-│   ├── agents/       # Topic/post/image generation logic
-│   ├── channels/     # Telegram now, future web/app adapters
-│   ├── formatting/   # Telegram HTML and future plain/web formatters
-│   ├── config.py     # Environment and path config
+│   ├── agents/             # Topic/post/image generation logic
+│   ├── channels/           # Telegram now, future web/app adapters
+│   ├── formatting/         # Telegram HTML and future plain/web formatters
+│   ├── config.py           # Environment and path config
 │   └── logging_setup.py
-├── telegram_bot.py   # Thin Telegram entrypoint
-├── logging.conf      # Production-friendly console logging config
-├── requirements.txt  # Python dependencies
-├── .env.example      # Safe environment variable template
-├── .gitignore        # Keeps secrets, venvs, caches, and logs out of git
+├── telegram_bot.py         # Thin Telegram entrypoint
+├── logging.conf            # Production-friendly console logging config
+├── requirements.txt        # Python dependencies
+├── .env.example            # Safe environment variable template
+├── .gitignore              # Keeps secrets, venvs, caches, and logs out of git
 └── README.md
 ```
 
