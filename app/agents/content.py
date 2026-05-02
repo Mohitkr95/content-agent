@@ -1,21 +1,23 @@
-from langchain_core.messages import HumanMessage, SystemMessage
+from functools import lru_cache
+
 from langchain_anthropic import ChatAnthropic
-import os
-from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, SystemMessage
 
-load_dotenv()
+from app.config import get_required_env
 
 
-llm = ChatAnthropic(
-    model="MiniMax-M2.7",
-    anthropic_api_key=os.getenv("MINIMAX_API_KEY"),
-    base_url="https://api.minimax.io/anthropic",
-)
+@lru_cache(maxsize=1)
+def get_llm():
+    return ChatAnthropic(
+        model="MiniMax-M2.7",
+        anthropic_api_key=get_required_env("MINIMAX_API_KEY"),
+        base_url="https://api.minimax.io/anthropic",
+    )
 
 
 def get_topic_suggestions():
-    """Get 10 advanced ML/Maths topic suggestions"""
-    response = llm.invoke([
+    """Get 10 advanced ML/Maths topic suggestions."""
+    response = get_llm().invoke([
         SystemMessage(content="""You are a creative content strategist for ML/AI and Mathematics.
 Suggest EXACTLY 10 advanced, highly technical topics for Twitter/X posts about ML or Mathematics.
 
@@ -39,18 +41,17 @@ Format your response as a numbered list (1-10), one topic per line. Nothing else
                 text = block.get("text", "")
                 for line in text.split("\n"):
                     line = line.strip()
-                    if line and len(topics) < 10:
-                        if line and line[0].isdigit():
-                            parts = line.split(".", 1)
-                            topic = parts[1].strip() if len(parts) > 1 else line
-                            topics.append(topic)
+                    if line and len(topics) < 10 and line[0].isdigit():
+                        parts = line.split(".", 1)
+                        topic = parts[1].strip() if len(parts) > 1 else line
+                        topics.append(topic)
                 break
 
     if len(topics) < 10:
         for block in content:
             if isinstance(block, dict) and block.get("type") == "text":
                 text = block.get("text", "")
-                lines = [l.strip() for l in text.split("\n") if l.strip()]
+                lines = [line.strip() for line in text.split("\n") if line.strip()]
                 topics = lines[:10]
                 break
 
@@ -58,8 +59,8 @@ Format your response as a numbered list (1-10), one topic per line. Nothing else
 
 
 def generate_post_from_topic(topic):
-    """Generate a detailed 200-250 word Twitter thread post from topic"""
-    response = llm.invoke([
+    """Generate a detailed 200-250 word Twitter thread post from topic."""
+    response = get_llm().invoke([
         SystemMessage(content=f"""You are an expert at creating detailed, educational Twitter posts about ML and Mathematics.
 
 Create a comprehensive post (200-250 words) about this topic: {topic}

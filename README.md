@@ -1,4 +1,4 @@
-# content-agent
+# Content Agent
 
 Telegram bot that generates advanced ML, AI, and mathematics post ideas, then turns a selected topic into a detailed technical post ready to copy and publish.
 
@@ -16,8 +16,13 @@ The bot uses MiniMax through the Anthropic-compatible LangChain client and `pyth
 
 ```text
 .
-├── agent.py          # MiniMax/LangChain topic and post generation
-├── telegram_bot.py   # Telegram command handlers, state, formatting, logging setup
+├── app/
+│   ├── agents/       # Topic/post/image generation logic
+│   ├── channels/     # Telegram now, future web/app adapters
+│   ├── formatting/   # Telegram HTML and future plain/web formatters
+│   ├── config.py     # Environment and path config
+│   └── logging_setup.py
+├── telegram_bot.py   # Thin Telegram entrypoint
 ├── logging.conf      # Production-friendly console logging config
 ├── requirements.txt  # Python dependencies
 ├── .env.example      # Safe environment variable template
@@ -95,7 +100,7 @@ Commands:
 
 ## Output Formatting
 
-The bot sends Telegram messages using HTML parse mode. Generated posts are lightly cleaned for Telegram:
+The Telegram channel sends messages using HTML parse mode. Generated posts are lightly cleaned for Telegram:
 
 - `# Title` becomes a bold title.
 - `*bold text*` becomes real bold text.
@@ -103,6 +108,17 @@ The bot sends Telegram messages using HTML parse mode. Generated posts are light
 - Real hashtags like `#MachineLearning` remain unchanged.
 
 The formatter is intentionally small. It avoids trying to fully parse Markdown or LaTeX, which keeps the bot easier to maintain.
+
+## Architecture
+
+The project separates core content generation from delivery channels:
+
+- `app/agents/` owns model calls and content generation.
+- `app/channels/` owns user-facing adapters like Telegram. A web app or API can be added here without changing generation logic.
+- `app/formatting/` owns channel-specific output formatting.
+- `app/config.py` and `app/logging_setup.py` keep environment and logging concerns out of product logic.
+
+This keeps the current Telegram bot small while leaving room for a website, mobile app, image generation, or API layer later.
 
 ## Logging
 
